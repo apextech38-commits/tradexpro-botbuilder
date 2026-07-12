@@ -62,3 +62,41 @@ body {
         }
     }
 }
+
+// Overlay container that <Modal> (src/components/shared_ui/modal) portals into.
+// Without this, #modal_root just sits in normal document flow (it's the first
+// child of <body>, before #root) with no positioning, backdrop, or stacking
+// context — so any modal content (e.g. the Quick Strategy panel) renders
+// inline on top of whatever happens to be underneath instead of as a proper
+// centered, dimmed overlay. This is what causes "overlapping buttons".
+.modal-root {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(0 0 0 / 72%);
+    opacity: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.modal-root:not(:empty) {
+    display: flex;
+    opacity: 1;
+    z-index: 9998;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+// Same treatment for the absolute-positioned popup portal (dropdowns, pickers).
+.popup-root:not(:empty) {
+    position: fixed;
+    inset: 0;
+    z-index: 9997;
+    pointer-events: none;
+
+    > * {
+        pointer-events: auto;
+    }
+}
