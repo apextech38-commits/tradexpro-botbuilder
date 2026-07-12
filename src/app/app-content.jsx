@@ -14,7 +14,6 @@ import useDevMode from '@/hooks/useDevMode';
 import { useStore } from '@/hooks/useStore';
 import useThemeSwitcher from '@/hooks/useThemeSwitcher';
 import { ThemeProvider } from '@deriv-com/quill-ui';
-import { setSmartChartsPublicPath } from '@deriv/deriv-charts';
 import { localize } from '@deriv-com/translations';
 import Audio from '../components/audio';
 import BlocklyLoading from '../components/blockly-loading';
@@ -90,10 +89,6 @@ const AppContent = observer(() => {
         },
         [recovered_transactions, recoverPendingContracts]
     );
-
-    React.useEffect(() => {
-        setSmartChartsPublicPath(getUrlBase('/js/smartcharts/'));
-    }, []);
 
     React.useEffect(() => {
         if (!is_subscribed_to_msg_listener.current && client.is_logged_in && is_api_initialized && api_base?.api) {

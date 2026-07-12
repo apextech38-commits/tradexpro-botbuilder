@@ -136,6 +136,11 @@ function App() {
 
     useAccountSwitching();
 
+    React.useEffect(() => {
+        const cleanup = initAuthBridge();
+        return cleanup;
+    }, []);
+
     // ── Legacy Deriv OAuth: tokens arrive directly in the URL ────────────────
     React.useEffect(() => {
         if (!isProcessing && legacyAccounts.length > 0) {
