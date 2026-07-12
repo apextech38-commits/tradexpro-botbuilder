@@ -6,9 +6,9 @@
         "node": "24.x"
     },
     "scripts": {
-        "start": "node node_modules/@rsbuild/core/bin/rsbuild.js dev",
-        "build": "rsbuild build",
-        "watch": "rsbuild build --watch",
+        "start": "vite",
+        "build": "vite build",
+        "watch": "vite build --watch",
         "serve": "http-server dist -p 8443 -a localhost -o",
         "start:webpack": "webpack serve --open --config webpack.config.js",
         "build:webpack": "webpack --config webpack.config.js",
@@ -18,7 +18,7 @@
         "coverage": "jest --coverage --coverageReporters=json-summary",
         "coverage:total": "npm run coverage && node -p \"require('./coverage/coverage-summary.json').total.lines.pct\"",
         "prepare": "husky install",
-        "build:analyze": "BUNDLE_ANALYZE=true rsbuild build",
+        "build:analyze": "vite build --mode analyze",
         "generate:brand-css": "node scripts/generate-brand-css.js",
         "dev:commit-push": "powershell -ExecutionPolicy Bypass -File scripts/dev-commit-push.ps1",
         "type-check": "tsc --noEmit"
