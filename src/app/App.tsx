@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import React from 'react';
 import type CopyTradingManager from '@/pages/copy-trading/copy-trading-manager';
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router-dom';
+import { initAuthBridge } from '@/auth/auth-bridge';
 import AppLoaderWrapper from '@/components/app-loader/app-loader-wrapper';
 import { getLoaderDuration, isLoaderEnabled } from '@/components/app-loader/loader-config';
 import ChunkLoader from '@/components/loader/chunk-loader';

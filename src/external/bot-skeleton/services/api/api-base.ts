@@ -348,6 +348,17 @@ class APIBase {
             // Get the stored token for legacy API authentication
             const { token: storedToken, account_id: accountId } = getToken();
 
+            // PKCE/OTP users (auth-bridge.ts writes sessionStorage['auth_info'] for
+            // these) connect via an OTP-signed WebSocket URL that already authenticates
+            // the socket for the target account — see getSocketURL()'s PKCE branch and
+            // DerivWSAccountsService.getAuthenticatedWebSocketURL(). Calling the legacy
+            // api.authorize(token) on top of that expects a classic Deriv API token;
+            // the only token available for these users is the OIDC access_token
+            // (ory_at_...), which the legacy authorize endpoint rejects. So for PKCE
+            // users we skip the authorize() call entirely and go straight to balance(),
+            // trusting the OTP handshake baked into the connection URL.
+            const isPKCEUser = !!sessionStorage.getItem('auth_info');
+
             console.log('[authorizeAndSubscribe] ⚙️ Starting authorization flow:', {
                 has_token: !!storedToken,
                 token_type: typeof storedToken,
@@ -356,11 +367,16 @@ class APIBase {
                 accountId,
                 api_ready: !!this.api,
                 ws_ready_state: this.api?.connection?.readyState,
+                is_pkce_user: isPKCEUser,
             });
 
             // Authorize with the token first (required for legacy API)
             let authorizeData: TAuthData | undefined;
-            if (storedToken) {
+            if (isPKCEUser) {
+                console.log(
+                    '[authorizeAndSubscribe] 🔓 PKCE/OTP user detected — skipping legacy api.authorize(), socket is pre-authenticated via OTP-signed URL'
+                );
+            } else if (storedToken) {
                 try {
                     console.log('[authorizeAndSubscribe] 🔐 Calling api.authorize() with legacy token...');
                     const authResult = await this.api.authorize(storedToken);
