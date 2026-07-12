@@ -5,6 +5,7 @@ import { StoreProvider } from '@/hooks/useStore';
 import { useAccountSwitching } from '@/hooks/useAccountSwitching';
 import { useOAuthCallback, LegacyAccount } from '@/hooks/useOAuthCallback';
 import { OAuthTokenExchangeService } from '@/services/oauth-token-exchange.service';
+import { initAuthBridge } from '@/auth/auth-bridge';
 import { initializeI18n, TranslationProvider } from '@deriv-com/translations';
 
 const i18nInstance = initializeI18n({ cdnUrl: '' });
@@ -76,6 +77,11 @@ function App() {
             console.error('OAuth callback error:', error);
         }
     }, [isProcessing, isValid, params.code, error, cleanupURL]);
+
+    useEffect(() => {
+        const cleanup = initAuthBridge();
+        return cleanup;
+    }, []);
 
     useEffect(() => {
         let cancelled = false;
