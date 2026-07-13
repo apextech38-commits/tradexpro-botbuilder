@@ -1,9 +1,8 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { generateOAuthURL, isDomainFeatureEnabled } from '@/components/shared';
-import ChunkLoader from '@/components/loader/chunk-loader';
+import { generateOAuthURL } from '@/components/shared';
 import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
 import Dialog from '@/components/shared_ui/dialog';
 import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
@@ -30,41 +29,16 @@ import {
     setModalStateChangeCallback,
 } from '@/utils/trade-type-modal-handler';
 import {
-    LabelPairedChartLineCaptionRegularIcon,
-    LabelPairedChartMixedCaptionRegularIcon,
-    LabelPairedChartTradingviewCaptionRegularIcon,
-    LabelPairedChartTrendUpCaptionRegularIcon,
-    LabelPairedCircleStarCaptionRegularIcon,
-    LabelPairedCopyCaptionRegularIcon,
     LabelPairedObjectsColumnCaptionRegularIcon,
     LabelPairedPuzzlePieceTwoCaptionBoldIcon,
-    LabelPairedSearchCaptionRegularIcon,
-    LabelPairedHandshakeCaptionRegularIcon,
-    LabelPairedChartCandlestickCaptionRegularIcon,
 } from '@deriv/quill-icons/LabelPaired';
 import { Localize, localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
 import RunPanel from '../../components/run-panel';
-import AutoTrades from '../auto-trades/auto-trades';
-import BestBots from '../best-bots';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
-import ManualTrading from '../manual-trading';
 import RunStrategy from '../dashboard/run-strategy';
-import Analysistool from '../analysistool';
-import Scanner from '../scanner';
-import HybridBots from '../hybrid-bots';
 import './main.scss';
-
-const Dtrader = React.lazy(() => import('../dtrader'));
-const Matches = React.lazy(() => import('../matches'));
-const Chart = React.lazy(() => import('../chart/chart-wrapper'));
-const TradingBots = React.lazy(() => import('../free-bots/trading-bots'));
-const Strategies = React.lazy(() => import('../free-bots/strategies'));
-const CopyTrading = React.lazy(() => import('../copy-trading'));
-const TradingView = React.lazy(() => import('../tradingview'));
-const SpeedBot = React.lazy(() => import('../speedbot'));
-const Chats = React.lazy(() => import('../chats'));
 
 const AppWrapper = observer(() => {
     const { connectionStatus } = useApiBase();
@@ -98,7 +72,7 @@ const AppWrapper = observer(() => {
         [key: string]: string;
     };
     const { clear } = summary_card;
-    const { BOT_BUILDER, DASHBOARD, AUTO_TRADES, MANUAL_TRADING, SCANNER, DTRADER } = DBOT_TABS;
+    const { BOT_BUILDER, DASHBOARD, DTRADER } = DBOT_TABS;
     const init_render = React.useRef(true);
     const hash = [
         'best_bots',
@@ -119,15 +93,10 @@ const AppWrapper = observer(() => {
         'hybrid_bots',
         'chats',
     ];
-    const show_auto_trades = isDomainFeatureEnabled('autoTrades');
-    const show_manual_trading = isDomainFeatureEnabled('manualTrading');
-    const show_scanner = isDomainFeatureEnabled('scanner');
-    const isMainTabVisible = (tab_index: number) => {
-        if (tab_index === AUTO_TRADES) return show_auto_trades;
-        if (tab_index === MANUAL_TRADING) return show_manual_trading;
-        if (tab_index === SCANNER) return show_scanner;
-        return true;
-    };
+    // Auto Trades, Manual Trading, and Scanner tabs have been removed from the
+    // nav entirely (Bot Builder-only build) — isMainTabVisible now always
+    // permits the remaining (Dashboard, Bot Builder) hash lookups.
+    const isMainTabVisible = () => true;
     const { isDesktop } = useDevice();
     const location = useLocation();
     const navigate = useNavigate();
@@ -191,7 +160,7 @@ const AppWrapper = observer(() => {
 
     React.useEffect(() => {
         const el_dashboard = document.getElementById('id-dbot-dashboard');
-        const el_last_tab = document.getElementById('id-dtrader');
+        const el_last_tab = document.getElementById('id-bot-builder');
 
         const observer_dashboard = new window.IntersectionObserver(
             ([entry]) => {
@@ -490,258 +459,6 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-bot-builder'
                             />
-                            {show_auto_trades && (
-                                <div
-                                    label={
-                                        <>
-                                            <LabelPairedChartTrendUpCaptionRegularIcon
-                                                height='24px'
-                                                width='24px'
-                                                fill='#c8a45d'
-                                            />
-                                            <Localize i18n_default_text='Auto Trades' />
-                                        </>
-                                    }
-                                    id='id-auto-trades'
-                                >
-                                    <AutoTrades />
-                                </div>
-                            )}
-                            {show_manual_trading && (
-                                <div
-                                    label={
-                                        <>
-                                            <LabelPairedChartMixedCaptionRegularIcon
-                                                height='24px'
-                                                width='24px'
-                                                fill='#c8a45d'
-                                            />
-                                            <Localize i18n_default_text='Manual Trading' />
-                                        </>
-                                    }
-                                    id='id-manual-trading'
-                                >
-                                    <ManualTrading />
-                                </div>
-                            )}
-                            {show_scanner ? (
-                                <div
-                                    label={
-                                        <>
-                                            <LabelPairedSearchCaptionRegularIcon
-                                                height='24px'
-                                                width='24px'
-                                                fill='#c8a45d'
-                                            />
-                                            <Localize i18n_default_text='Scanner' />
-                                        </>
-                                    }
-                                    id='id-scanner'
-                                >
-                                    <Scanner />
-                                </div>
-                            ) : null}
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedChartLineCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='Analysis Tool' />
-                                    </>
-                                }
-                                id='id-analysistool'
-                            >
-                                <Analysistool />
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedChartTradingviewCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='DTrader' />
-                                    </>
-                                }
-                                id='id-dtrader'
-                            >
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading DTrader...')} />}
-                                >
-                                    <Dtrader />
-                                </Suspense>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedHandshakeCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='Matches' />
-                                    </>
-                                }
-                                id='id-matches'
-                            >
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading Matches...')} />}
-                                >
-                                    <Matches />
-                                </Suspense>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedChartCandlestickCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='Chart' />
-                                    </>
-                                }
-                                id='id-chart'
-                            >
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading Chart...')} />}
-                                >
-                                    <Chart />
-                                </Suspense>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedCircleStarCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='Trading Bots' />
-                                    </>
-                                }
-                                id='id-trading-bots'
-                            >
-                                <Suspense
-                                    fallback={
-                                        <ChunkLoader message={localize('Please wait, loading Trading Bots...')} />
-                                    }
-                                >
-                                    <TradingBots />
-                                </Suspense>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedChartLineCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='Strategies' />
-                                    </>
-                                }
-                                id='id-strategies'
-                            >
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading Strategies...')} />}
-                                >
-                                    <Strategies />
-                                </Suspense>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedCopyCaptionRegularIcon height='24px' width='24px' fill='#c8a45d' />
-                                        <Localize i18n_default_text='Copy Trading' />
-                                    </>
-                                }
-                                id='id-copy-trading'
-                            >
-                                <Suspense
-                                    fallback={
-                                        <ChunkLoader message={localize('Please wait, loading Copy Trading...')} />
-                                    }
-                                >
-                                    <CopyTrading />
-                                </Suspense>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedChartTrendUpCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='TradingView' />
-                                    </>
-                                }
-                                id='id-tradingview'
-                            >
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading TradingView...')} />}
-                                >
-                                    <TradingView />
-                                </Suspense>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedChartTrendUpCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='SpeedBot' />
-                                    </>
-                                }
-                                id='id-speedbot'
-                            >
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading SpeedBot...')} />}
-                                >
-                                    <SpeedBot />
-                                </Suspense>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedPuzzlePieceTwoCaptionBoldIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='Hybrid Bots' />
-                                    </>
-                                }
-                                id='id-hybrid-bots'
-                            >
-                                <HybridBots />
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedHandshakeCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='#c8a45d'
-                                        />
-                                        <Localize i18n_default_text='Chats' />
-                                    </>
-                                }
-                                id='id-chats'
-                            >
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading Chats...')} />}
-                                >
-                                    <Chats />
-                                </Suspense>
-                            </div>
                         </Tabs>
                         {!isDesktop && right_tab_shadow && <span className='tabs-shadow tabs-shadow--right' />}{' '}
                     </div>
