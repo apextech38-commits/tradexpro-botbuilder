@@ -192,7 +192,7 @@ const MobileDrawerFooter = () => {
     );
 };
 
-const StatisticsInfoModal = ({
+export const StatisticsInfoModal = ({
     is_mobile,
     is_statistics_info_modal_open,
     toggleStatisticsInfoModal,
