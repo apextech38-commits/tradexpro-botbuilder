@@ -8,12 +8,16 @@ import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
 import { TBlocklyEvents } from 'Types';
+import DesktopWrapper from '../../components/shared_ui/desktop-wrapper';
+import MobileWrapper from '../../components/shared_ui/mobile-wrapper';
 import LoadModal from '../../components/load-modal';
+import RunPanel from '../../components/run-panel';
 import SaveModal from '../dashboard/bot-list/save-modal';
+import RunStrategy from '../dashboard/run-strategy';
 import BotBuilderTourHandler from '../tutorials/dbot-tours/bot-builder-tour';
 import QuickStrategy1 from './quick-strategy';
-import RunConsole from './run-console';
 import WorkspaceWrapper from './workspace-wrapper';
+import './run-strategy-wrapper.scss';
 
 const BotBuilder = observer(() => {
     const { dashboard, app, run_panel, toolbar, quick_strategy, blockly_store } = useStore();
@@ -124,7 +128,17 @@ const BotBuilder = observer(() => {
                     <WorkspaceWrapper />
                 </div>
             </div>
-            {!is_preview_on_popup && <RunConsole />}
+            {!is_preview_on_popup && (
+                <>
+                    <DesktopWrapper>
+                        <div className='bot-builder-run-strategy-wrapper'>
+                            <RunStrategy />
+                            <RunPanel />
+                        </div>
+                    </DesktopWrapper>
+                    <MobileWrapper>{!is_open && <RunPanel />}</MobileWrapper>
+                </>
+            )}
             {active_tab === DBOT_TABS.BOT_BUILDER && <BotBuilderTourHandler is_mobile={!isDesktop} />}
             {/* removed this outside from toolbar becuase it needs to loaded seperately without dependency */}
             <LoadModal />
