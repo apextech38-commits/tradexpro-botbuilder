@@ -3,29 +3,23 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import Journal from '@/components/journal';
 import Button from '@/components/shared_ui/button';
-import Tabs from '@/components/shared_ui/tabs';
 import ToggleSwitch from '@/components/shared_ui/toggle-switch';
 import Summary from '@/components/summary';
 import Transactions from '@/components/transactions';
 import { useStore } from '@/hooks/useStore';
 import { LabelPairedPlayLgFillIcon, LabelPairedSquareLgFillIcon } from '@deriv/quill-icons/LabelPaired';
 import { Localize, localize } from '@deriv-com/translations';
-// Named exports aren't re-exported from the run-panel barrel (index.ts only
-// default-exports RunPanel), so pull them from the file directly.
+import { run_panel as RUN_PANEL_TABS } from '@/constants/run-panel';
 import { StatisticsInfoModal, StatisticsSummary } from '@/components/run-panel/run-panel';
+import '@/components/run-panel/run-panel.scss';
 import './run-console.scss';
 
-/**
- * Static, always-visible recreation of the "Run" card (Run + Execution speed,
- * Summary/Transactions/Journal tabs, stats, Reset) that used to only exist as a
- * fixed-position Drawer (see components/run-panel). This version renders inline
- * in the empty column to the right of the Blockly workspace on the Bot Builder tab.
- *
- * NOTE: the "Execution: FAST" toggle is currently a display-only control (local
- * state). There is no backend/runtime hook for execution speed yet, so it does not
- * change trade timing until that's wired up - flagging this so it isn't mistaken
- * for a working setting.
- */
+const TAB_ITEMS = [
+    { index: RUN_PANEL_TABS.SUMMARY, label: 'Summary' },
+    { index: RUN_PANEL_TABS.TRANSACTIONS, label: 'Transactions' },
+    { index: RUN_PANEL_TABS.JOURNAL, label: 'Journal' },
+];
+
 const RunConsole = observer(() => {
     const { run_panel, transactions, client } = useStore();
     const { currency } = client;
@@ -88,18 +82,25 @@ const RunConsole = observer(() => {
                 </div>
             </div>
 
+            <div className='run-console__tabs'>
+                {TAB_ITEMS.map(tab => (
+                    <button
+                        key={tab.index}
+                        type='button'
+                        className={classNames('run-console__tab', {
+                            'run-console__tab--active': active_index === tab.index,
+                        })}
+                        onClick={() => setActiveTabIndex(tab.index)}
+                    >
+                        {localize(tab.label)}
+                    </button>
+                ))}
+            </div>
+
             <div className='run-console__body'>
-                <Tabs active_index={active_index} onTabItemClick={setActiveTabIndex} top>
-                    <div id='run-console-tab__summary' label={<Localize i18n_default_text='Summary' />}>
-                        <Summary is_drawer_open />
-                    </div>
-                    <div id='run-console-tab__transactions' label={<Localize i18n_default_text='Transactions' />}>
-                        <Transactions is_drawer_open />
-                    </div>
-                    <div id='run-console-tab__journal' label={<Localize i18n_default_text='Journal' />}>
-                        <Journal />
-                    </div>
-                </Tabs>
+                {active_index === RUN_PANEL_TABS.SUMMARY && <Summary is_drawer_open />}
+                {active_index === RUN_PANEL_TABS.TRANSACTIONS && <Transactions is_drawer_open />}
+                {active_index === RUN_PANEL_TABS.JOURNAL && <Journal />}
             </div>
 
             <StatisticsSummary

@@ -62,3 +62,26 @@
         }
     }
 }
+
+.run-console__tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-normal, #e6e9e9);
+    padding: 0 1.2rem;
+}
+
+.run-console__tab {
+    background: none;
+    border: none;
+    padding: 1rem 0.8rem;
+    margin-right: 1.6rem;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--text-less-prominent, #999);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+
+    &--active {
+        color: var(--text-prominent, #000);
+        border-bottom-color: var(--status-danger, #ec3f3f);
+    }
+}
