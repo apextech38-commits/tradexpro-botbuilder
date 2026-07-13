@@ -1,0 +1,14 @@
+@use 'components/shared/styles/devices' as *;
+
+// Standalone equivalent of `.main__run-strategy-wrapper` from the full-shell
+// app's main.scss. This repo has no `.main` wrapper (it only ever renders
+// the Bot Builder page), so this is scoped on its own class instead.
+.bot-builder-run-strategy-wrapper {
+    inset-inline-end: 1.6rem;
+    top: 1.6rem;
+    z-index: 2;
+
+    @include desktop-screen {
+        position: absolute;
+    }
+}
